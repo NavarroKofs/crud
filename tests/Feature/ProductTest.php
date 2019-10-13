@@ -143,13 +143,12 @@ class ProductTest extends TestCase
         $nombre = $producto->name;
         $precio = $producto->price;
         $id = $producto->id;
-
         $response = $this->json('GET', '/api/products/'. $id .'');
         $response->assertStatus(200);
         $valor = $response->decodeResponseJson();
-        $this->assertJsonStringNotEqualsJsonString(
-            json_encode($valor),
-            json_encode($producto)
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($producto),
+            json_encode($valor)
         );
     }
     /**     * SHOW-2     */
@@ -161,7 +160,6 @@ class ProductTest extends TestCase
         $nombre = $producto->name;
         $precio = $producto->price;
         $id = $producto->id;
-
         $response = $this->json('GET', '/api/products/-20');
         $response->assertStatus(404);
         $response->assertJsonStructure([
@@ -257,10 +255,11 @@ class ProductTest extends TestCase
                 "type"]
         ]);
         $valor = $this->json('GET', '/api/products/'. $id .'');
-        /*$this->assertJsonStringEqualsJsonString(
+        $this->assertJsonStringEqualsJsonString(
             json_encode($producto),
-            json_encode($valor)
-        );*/
+            json_encode($valor->decodeResponseJson())
+        );
+        //print_r(json_encode($valor->decodeResponseJson()));
         $this->assertDatabaseHas(
             'products',
             [
@@ -292,10 +291,10 @@ class ProductTest extends TestCase
                 "type"]
         ]);
         $valor = $this->json('GET', '/api/products/'. $id .'');
-        /*$this->assertJsonStringEqualsJsonString(
+        $this->assertJsonStringEqualsJsonString(
             json_encode($producto),
-            json_encode($valor)
-        );*/
+            json_encode($valor->decodeResponseJson())
+        );
         $this->assertDatabaseHas(
             'products',
             [
