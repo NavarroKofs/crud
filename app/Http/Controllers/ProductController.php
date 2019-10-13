@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use \Exception;
 
 class ProductController extends Controller
 {
@@ -35,12 +38,25 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // Create a new product
-        $product = Product::create($request->all());
-   
-        // Return a response with a product json
-        // representation and a 201 status code   
-        return response()->json($product,201);
+        try {
+            if(!is_numeric($request->price) || ($request->price <= 0)){
+                $error = 'Always throw this error';
+                throw new Exception($error);
+            }
+            // Create a new product
+            $product = Product::create($request->all());
+            // Return a response with a product json
+            // representation and a 201 status code   
+            return response()->json($product,201);
+        } catch(Exception $exception) {
+            $type = explode("\\", get_class($exception));
+            $type = $type[count($type)-1];
+            return response()->json([
+                "errors"=> ["code"=> "ERROR-1",
+                "title"=>  "Unprocessable Entity",
+                "type" => $type
+                ]]  , 422);
+        }
     }
 
     /**
@@ -51,8 +67,18 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $producto = Product::findOrFail($id);
-        return $producto;
+        try {
+            $producto = Product::findOrFail($id);
+            return response()->json($producto,200);
+        } catch (ModelNotFoundException $exception) {
+            $type = explode("\\", get_class($exception));
+            $type = $type[count($type)-1];
+            return response()->json([
+                "errors"=> ["code"=> "ERROR-2",
+                "title"=>  "Not Found",
+                "type" => $type
+                ]]  , 404);
+        }
     }
 
         /**
@@ -63,7 +89,7 @@ class ProductController extends Controller
      */
     public function showAll(Product $product)
     {
-        return $product->all();
+        return response()->json($product->all(),200);
     }
 
     /**
@@ -86,10 +112,34 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $update = Product::findOrFail($id);
-        $update->name = $request->name;
-        $update->price = $request->price;
-        $update->save();
+        try {
+            $update = Product::findOrFail($id);
+            if(!is_numeric($request->price) || ($request->price <= 0)){
+                $error = 'Always throw this error';
+                throw new Exception($error);
+            }
+            $update->name = $request->name;
+            $update->price = $request->price;
+            $update->save();
+            return response()->json($update,200);
+        } catch(Exception $exception){
+            $type = explode("\\", get_class($exception));
+            $type = $type[count($type)-1];
+            return response()->json([
+                "errors"=> ["code"=> "ERROR-1",
+                "title"=>  "Unprocessable Entity",
+                "type" => $type
+                ]]  , 422);
+        } catch (ModelNotFoundException $exception) {
+            $type = explode("\\", get_class($exception));
+            $type = $type[count($type)-1];
+            return response()->json([
+                "errors"=> ["code"=> "ERROR-2",
+                "title"=>  "Not Found",
+                "type" => $type
+                ]]  , 404);
+        }
+        
     }
 
     /**
@@ -100,6 +150,18 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $delete = Product::destroy($id);
+        try {
+            $request = Product::findOrFail($id);
+            $delete = Product::destroy($id);
+            return response()->json("Se ha eliminado exitosamente", 200);
+        } catch (Exception $exception) {
+            $type = explode("\\", get_class($exception));
+            $type = $type[count($type)-1];
+            return response()->json([
+                "errors"=> ["code"=> "ERROR-2",
+                "title"=>  "Not Found",
+                "type" => $type
+                ]]  , 404);
+        }
     }
 }

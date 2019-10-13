@@ -1,0 +1,11 @@
+NO DEVUELVE MI FUNCIÓN EL ID PERO CUANDO HAGO UNA COMPARACIÓN ENTRE LA FÁBRICA Y EL MÍO ME LA PIDE.
+	$this->assertJsonStringEqualsJsonString(
+            json_encode($producto),
+            json_encode($valor)
+        );
+
+
+NO SÉ COMO REPRESENTAR EL JSON
+	$response->assertJsonStructure([
+            "errors", "code", "title", "type"
+        ]);
