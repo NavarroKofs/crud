@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class ProductTest extends TestCase
 {
     use RefreshDatabase;
+    /**     * CREATE-1     */
     /** @test */
     public function test_client_can_create_a_product()
     {
@@ -47,6 +48,7 @@ class ProductTest extends TestCase
             ]
         );
     }
+    /**     * CREATE-2     */
     /** @test */
     public function the_name_attribute_is_not_sent_in_the_request()
     {
@@ -67,6 +69,7 @@ class ProductTest extends TestCase
                 "type"]
         ]);
     }
+    /**     * CREATE-3     */
     /** @test */
     public function the_price_attribute_is_not_sent_in_the_request()
     {
@@ -87,6 +90,7 @@ class ProductTest extends TestCase
                 "type"]
         ]);
     }
+    /**     * CREATE-4     */
     /** @test */
     public function the_price_attribute_is_not_a_number_create()
     {
@@ -108,6 +112,7 @@ class ProductTest extends TestCase
                 "type"]
         ]);
     }
+    /**     * CREATE-5     */
     /** @test */
     public function the_price_attribute_is_less_than_or_equal_to_zero_create()
     {
@@ -129,6 +134,7 @@ class ProductTest extends TestCase
                 "type"]
         ]);
     }
+    /**     * SHOW-1     */
     /** @test */
     public function test_client_can_show_a_product()
     {
@@ -146,6 +152,7 @@ class ProductTest extends TestCase
             json_encode($producto)
         );
     }
+    /**     * SHOW-2     */
     /** @test */
     public function the_ID_does_not_exist_show_a_product()
     {
@@ -164,6 +171,7 @@ class ProductTest extends TestCase
                 "type"]
         ]);
     }
+    /**     * DELETE-1     */
     /** @test */
     public function test_client_can_delete_products()
     {
@@ -180,6 +188,7 @@ class ProductTest extends TestCase
             'price' => $precio
         ]);
     }
+    /**     * DELETE-2     */
     /** @test */
     public function the_ID_does_not_exist_delete_products()
     {
@@ -196,6 +205,7 @@ class ProductTest extends TestCase
             'price' => $precio
         ]);
     }
+    /**     * UPDATE-1     */
     /** @test */
     public function test_client_can_update_a_product()
     {
@@ -225,6 +235,7 @@ class ProductTest extends TestCase
             ]
         );
     }
+    /**     * UPDATE-2     */
     /** @test */
     public function the_price_attribute_is_not_a_number_update()
     {
@@ -259,6 +270,7 @@ class ProductTest extends TestCase
             ]
         );
     }
+    /**     * UPDATE-3     */
     /** @test */
     public function the_price_attribute_is_less_than_or_equal_to_zero_update()
     {
@@ -293,6 +305,7 @@ class ProductTest extends TestCase
             ]
         );
     }
+    /**     * UPDATE-4     */
     /** @test */
     public function the_ID_does_not_exist_update()
     {
@@ -314,6 +327,7 @@ class ProductTest extends TestCase
                 "type"]
         ]);
     }
+    /**     * LIST-1     */
     /** @test */
     public function test_client_can_show_all_products()
     {
@@ -331,6 +345,7 @@ class ProductTest extends TestCase
         $response = $this->json('GET', '/api/products/');
         $this->assertEquals(200, $response->getStatusCode());
     }
+    /**     * LIST-2     */
     /** @test */
     public function test_client_can_show_all_products_when_is_empty(){
         $productData = '{"baseResponse":{"headers":{},"original":[],"exception":null}}';
