@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use \Exception;
+use App\Http\Resources\Product as ProductResource;
+use App\Http\Resources\ProductCollection;
 
 class ProductController extends Controller
 {
@@ -39,15 +41,17 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
-            if(!is_numeric($request->price) || ($request->price <= 0)){
+            $nombre = $request->data["attributes"]["name"];
+            $precio = $request->data["attributes"]["price"];
+            if(!is_numeric($precio) || ($precio <= 0)){
                 $error = 'Always throw this error';
                 throw new Exception($error);
             }
             // Create a new product
-            $product = Product::create($request->all());
+            $product = new ProductResource(Product::create(["name" => $nombre, "price" =>$precio]), 201);
             // Return a response with a product json
-            // representation and a 201 status code   
-            return response()->json($product,201);
+            // representation and a 201 status code  
+            return $product;
         } catch(Exception $exception) {
             $type = explode("\\", get_class($exception));
             $type = $type[count($type)-1];
@@ -55,7 +59,8 @@ class ProductController extends Controller
                 "errors"=> ["code"=> "ERROR-1",
                 "title"=>  "Unprocessable Entity",
                 "type" => $type
-                ]]  , 422);
+                ]
+            ]  , 422);
         }
     }
 
@@ -65,11 +70,11 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
+    
     public function show($id)
     {
         try {
-            $producto = Product::findOrFail($id);
-            return response()->json($producto,200);
+            return new ProductResource(Product::findOrFail($id), 200);
         } catch (ModelNotFoundException $exception) {
             $type = explode("\\", get_class($exception));
             $type = $type[count($type)-1];
@@ -89,7 +94,7 @@ class ProductController extends Controller
      */
     public function showAll(Product $product)
     {
-        return response()->json($product->all(),200);
+        return new ProductCollection(Product::all(), 200);
     }
 
     /**
@@ -114,14 +119,16 @@ class ProductController extends Controller
     {
         try {
             $update = Product::findOrFail($id);
-            if(!is_numeric($request->price) || ($request->price <= 0)){
+            $nombre = $request->data["attributes"]["name"];
+            $precio = $request->data["attributes"]["price"];
+            if(!is_numeric($precio) || ($precio <= 0)){
                 $error = 'Always throw this error';
                 throw new Exception($error);
             }
-            $update->name = $request->name;
-            $update->price = $request->price;
+            $update->name = $nombre;
+            $update->price = $precio;
             $update->save();
-            return response()->json($update,200);
+            return new ProductResource(Product::findOrFail($id), 200);
         } catch(Exception $exception){
             $type = explode("\\", get_class($exception));
             $type = $type[count($type)-1];
@@ -139,9 +146,8 @@ class ProductController extends Controller
                 "type" => $type
                 ]]  , 404);
         }
-        
     }
-
+    
     /**
      * Remove the specified resource from storage.
      *
